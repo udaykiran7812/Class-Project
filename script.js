@@ -1,65 +1,88 @@
-const pickerBtn = document.getElementById('pickerBtn');
+const form = document.getElementById('uploadForm');
 const rollNumbersList = document.getElementById('rollNumbers');
+const datePicker = document.getElementById('datePicker');
+const viewBtn = document.getElementById('viewBtn');
+const pickerBtn = document.getElementById('pickerBtn');
 const fileInfoDiv = document.getElementById('fileInfo');
+const rollNoInput = document.getElementById('rollNoInput');
 
+// PASTE YOUR WEB APP URL HERE
+const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbydC3H1BvRh4rG7zIIZZptrOWAYBbCjKgAmJyCsIgFbUW0Tf1ZLCN5F1-rtSbOGXzW-/exec';
+// PASTE YOUR CREDENTIALS HERE
 const DEVELOPER_KEY = 'AIzaSyBt-QMgu5Yj2_DVh5cmlsGfnTJpI_ejpqk';
 const CLIENT_ID = '887186094221-5vupnfv0r2srdaohgdr034lmsbpjp659.apps.googleusercontent.com';
 
 let uploadedFileId = null;
 let oauthToken = null;
-const fileInput = document.getElementById('fileInput');
-const fileInfoDiv = document.getElementById('fileInfo');
-const form = document.getElementById('uploadForm');
-const rollNumbersList = document.getElementById('rollNumbers');
-const datePicker = document.getElementById('datePicker');
-const viewBtn = document.getElementById('viewBtn');
 
-// <<< PASTE YOUR WEB APP URL HERE
-const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzl0ChSgZZB6f0yQebtvTvtips73mRy713N9Y1_rsVTv09YTmO0Gsob9Bos8LDSen7/exec'; 
-
-// Function to fetch and display roll numbers based on date
-function fetchRollNumbers(date = null) {
-  const url = new URL(APP_SCRIPT_URL);
-  if (date) {
-    url.searchParams.append('date', date);
-  }
-
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      rollNumbersList.innerHTML = '';
-      if (data && data.length > 0) {
-        data.forEach(rollNo => {
-          const li = document.createElement('li');
-          li.textContent = rollNo;
-          rollNumbersList.appendChild(li);
+// --- Google Picker API Setup ---
+function onApiLoad() {
+    gapi.load('auth2', function() {
+        gapi.auth2.init({
+            clientId: CLIENT_ID,
+            scope: 'https://www.googleapis.com/auth/drive.file'
+        }).then(() => {
+            const auth = gapi.auth2.getAuthInstance();
+            if (auth.isSignedIn.get()) {
+                oauthToken = auth.currentUser.get().getAuthResponse().access_token;
+            } else {
+                auth.signIn().then(() => {
+                    oauthToken = auth.currentUser.get().getAuthResponse().access_token;
+                });
+            }
         });
-      } else {
-        rollNumbersList.innerHTML = '<li>No submissions for this date.</li>';
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-      rollNumbersList.innerHTML = '<li>Error loading data.</li>';
     });
+    gapi.load('picker', onPickerApiLoad);
 }
 
-// Event listener for form submission
-// Event listener for form submission
+function onPickerApiLoad() {
+    pickerBtn.onclick = createPicker;
+}
+
+function createPicker() {
+    if (!oauthToken) {
+        alert('Authentication failed. Please refresh the page.');
+        return;
+    }
+
+    const view = new google.picker.View(google.picker.ViewId.DOCS);
+    const picker = new google.picker.PickerBuilder()
+        .setOAuthToken(oauthToken)
+        .setDeveloperKey(DEVELOPER_KEY)
+        .setAppId(CLIENT_ID.split('-')[0])
+        .addView(view)
+        .setCallback(pickerCallback)
+        .build();
+    picker.setVisible(true);
+}
+
+function pickerCallback(data) {
+    if (data.action == google.picker.Action.PICKED) {
+        const doc = data.docs[0];
+        uploadedFileId = doc.id;
+        fileInfoDiv.textContent = `File selected: ${doc.name}`;
+    }
+}
+
+// Load the API library
+(function() {
+    const script = document.createElement('script');
+    script.src = 'https://apis.google.com/js/api.js?onload=onApiLoad';
+    document.body.appendChild(script);
+})();
+
+// --- Your existing code, modified ---
 form.addEventListener('submit', function(event) {
     event.preventDefault();
 
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput.files[0];
-    const rollNumbers = document.getElementById('rollNoInput').value;
-
-    if (!file) {
-        alert("Please select a file to upload.");
+    if (!uploadedFileId) {
+        alert("Please select a file using the 'Select Permission Letter' button.");
         return;
     }
-    
+
+    const rollNumbers = rollNoInput.value;
     const formData = new FormData();
-    formData.append('file', file, file.name); // Corrected line
+    formData.append('fileId', uploadedFileId);
     formData.append('rollNumbers', rollNumbers);
 
     fetch(APP_SCRIPT_URL, {
@@ -72,8 +95,10 @@ form.addEventListener('submit', function(event) {
             alert('Submission failed: ' + data.error);
         } else {
             alert('Submission successful!');
-            form.reset(); 
-            fetchRollNumbers(); 
+            form.reset();
+            uploadedFileId = null;
+            fileInfoDiv.textContent = '';
+            fetchRollNumbers();
         }
     })
     .catch(error => {
@@ -84,16 +109,7 @@ form.addEventListener('submit', function(event) {
 
 // Event listener for date selection
 viewBtn.addEventListener('click', function() {
-  fetchRollNumbers(datePicker.value);
-});
-
-fileInput.addEventListener('change', function() {
-    const file = this.files[0];
-    if (file) {
-        fileInfoDiv.textContent = `File selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
-    } else {
-        fileInfoDiv.textContent = 'No file selected.';
-    }
+    fetchRollNumbers(datePicker.value);
 });
 
 // Load today's data when the page first opens
