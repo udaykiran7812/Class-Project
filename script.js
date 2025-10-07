@@ -1,3 +1,12 @@
+const pickerBtn = document.getElementById('pickerBtn');
+const rollNumbersList = document.getElementById('rollNumbers');
+const fileInfoDiv = document.getElementById('fileInfo');
+
+const DEVELOPER_KEY = 'AIzaSyBt-QMgu5Yj2_DVh5cmlsGfnTJpI_ejpqk';
+const CLIENT_ID = '887186094221-5vupnfv0r2srdaohgdr034lmsbpjp659.apps.googleusercontent.com';
+
+let uploadedFileId = null;
+let oauthToken = null;
 const fileInput = document.getElementById('fileInput');
 const fileInfoDiv = document.getElementById('fileInfo');
 const form = document.getElementById('uploadForm');
