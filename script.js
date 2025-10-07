@@ -1,3 +1,5 @@
+const fileInput = document.getElementById('fileInput');
+const fileInfoDiv = document.getElementById('fileInfo');
 const form = document.getElementById('uploadForm');
 const rollNumbersList = document.getElementById('rollNumbers');
 const datePicker = document.getElementById('datePicker');
