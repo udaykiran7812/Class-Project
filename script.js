@@ -36,34 +36,41 @@ function fetchRollNumbers(date = null) {
 }
 
 // Event listener for form submission
+// Event listener for form submission
 form.addEventListener('submit', function(event) {
-  event.preventDefault();
+    event.preventDefault();
 
-  const file = document.getElementById('fileInput').files[0];
-  const rollNumbers = document.getElementById('rollNoInput').value;
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    const rollNumbers = document.getElementById('rollNoInput').value;
 
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('rollNumbers', rollNumbers);
-
-  fetch(APP_SCRIPT_URL, {
-    method: 'POST',
-    body: formData,
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data && data.error) {
-      alert('Submission failed: ' + data.error);
-    } else {
-      alert('Submission successful!');
-      form.reset(); // Clear the form
-      fetchRollNumbers(); // Refresh the list with today's data
+    if (!file) {
+        alert("Please select a file to upload.");
+        return;
     }
-  })
-  .catch(error => {
-    console.error('Submission failed:', error);
-    alert('Submission failed due to a network error.');
-  });
+    
+    const formData = new FormData();
+    formData.append('file', file, file.name); // Corrected line
+    formData.append('rollNumbers', rollNumbers);
+
+    fetch(APP_SCRIPT_URL, {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data && data.error) {
+            alert('Submission failed: ' + data.error);
+        } else {
+            alert('Submission successful!');
+            form.reset(); 
+            fetchRollNumbers(); 
+        }
+    })
+    .catch(error => {
+        console.error('Submission failed:', error);
+        alert('Submission failed due to a network error.');
+    });
 });
 
 // Event listener for date selection
