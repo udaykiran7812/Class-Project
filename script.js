@@ -71,5 +71,14 @@ viewBtn.addEventListener('click', function() {
   fetchRollNumbers(datePicker.value);
 });
 
+fileInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        fileInfoDiv.textContent = `File selected: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+    } else {
+        fileInfoDiv.textContent = 'No file selected.';
+    }
+});
+
 // Load today's data when the page first opens
 fetchRollNumbers();
