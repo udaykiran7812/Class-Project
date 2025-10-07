@@ -8,27 +8,22 @@
     <div class="container">
         <h1>Upload Your Permission Letter</h1>
         <form id="uploadForm">
-            
-        <input type="text" id="rollNoInput" placeholder="Enter roll number(s) separated by commas" required>
-<button type="button" id="pickerBtn">Select Permission Letter</button>
-<div id="fileInfo"></div>
-<button type="submit">Submit</button>
+            <input type="text" id="rollNoInput" placeholder="Enter roll number(s) separated by commas" required>
+            <button type="button" id="pickerBtn">Select Permission Letter</button>
+            <div id="fileInfo"></div>
+            <button type="submit">Submit</button>
         </form>
-
         <hr>
-
         <div class="date-selector">
             <label for="datePicker">View Data for:</label>
             <input type="date" id="datePicker">
             <button id="viewBtn">View</button>
         </div>
-
         <div class="roll-numbers-list">
             <h2>Submitted Roll Numbers</h2>
             <ul id="rollNumbers"></ul>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
