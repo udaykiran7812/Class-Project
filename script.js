@@ -6,7 +6,7 @@ const datePicker = document.getElementById('datePicker');
 const viewBtn = document.getElementById('viewBtn');
 
 // <<< PASTE YOUR WEB APP URL HERE
-const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx6Zc9CZ3hJtW6C41RJ_fRiZzKsYeLmpTduXYJZmfI4_pw8hI8ym-U8OCjNj2xnQe1O/exec'; 
+const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbynFAbxrYDxtbzK7BbLu1ZF2eSk0VLOD3lMg17AnHjYqjaCqG1XyMkDDMQNjNW1ko9I/exec'; 
 
 // Function to fetch and display roll numbers based on date
 function fetchRollNumbers(date = null) {
