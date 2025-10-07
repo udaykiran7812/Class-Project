@@ -71,7 +71,7 @@ function pickerCallback(data) {
     document.body.appendChild(script);
 })();
 
-// --- Your existing code, modified ---
+// --- Your form submission logic ---
 form.addEventListener('submit', function(event) {
     event.preventDefault();
 
